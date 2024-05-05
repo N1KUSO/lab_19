@@ -2,6 +2,40 @@
 
 #define MAX_SIZE 100
 
+int calculate(int op1, char opetator, int op2) {
+    switch (opetator) {
+        case '+':
+            return op1 + op2;
+        case '-':
+            return op1 - op2;
+        case '*':
+            return op1 * op2;
+        case '/':
+            return op1 / op2;
+        default:
+            printf("operator error");
+    }
+}
+
+void task3() {
+    FILE *input_file = fopen("../input.txt", "r+");
+
+    int op1, op2;
+    char operator;
+    fscanf(input_file, "%d %c %d", &op1, &operator, &op2);
+
+    int result = calculate(op1, operator, op2);
+
+    if (fscanf(input_file, " %c %d", &operator, &op2) == 2) {
+        result = calculate(result, operator, op2);
+    }
+
+    fseek(input_file, 0, SEEK_END);
+    fprintf(input_file, " = %d\n", result);
+
+    fclose(input_file);
+}
+
 void task2() {
     FILE *input_file = fopen("../input.txt", "r");
     FILE *temp_file = fopen("../temp.txt", "w");
@@ -48,7 +82,7 @@ void task1() {
 }
 
 int main() {
-    task2();
+    task3();
 
     return 0;
 }
