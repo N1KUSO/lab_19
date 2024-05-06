@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_SIZE 100
 
@@ -15,6 +16,26 @@ int calculate(int op1, char opetator, int op2) {
         default:
             printf("operator error");
     }
+}
+
+void task4() {
+    FILE *input_file = fopen("../input.txt", "r");
+    FILE *temp_file = fopen("../temp.txt", "w");
+
+    const char *sequence = "abc";
+    char word[MAX_SIZE];
+
+    while(fscanf(input_file, "%s", word) != EOF) {
+        if(strstr(word, sequence) != NULL) {
+            fprintf(temp_file, "%s\n", word);
+        }
+    }
+
+    fclose(input_file);
+    fclose(temp_file);
+
+    remove("../input.txt");
+    rename("../temp.txt", "../input.txt");
 }
 
 void task3() {
@@ -82,7 +103,7 @@ void task1() {
 }
 
 int main() {
-    task3();
+    task4();
 
     return 0;
 }
