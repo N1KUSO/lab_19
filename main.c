@@ -18,6 +18,47 @@ int calculate(int op1, char opetator, int op2) {
     }
 }
 
+void get_longest_word(char *line, char* longest_word) {
+    char word[MAX_SIZE];
+    char max_word[MAX_SIZE];
+    int max_length = 0;
+
+    char *token = strtok(line, " ");
+    while (token != NULL) {
+        strcpy(word, token);
+
+        if (strlen(word) > max_length) {
+            max_length = strlen(word);
+            strcpy(max_word, word);
+        }
+
+        token = strtok(NULL, " ");
+    }
+
+    strcpy(longest_word, max_word);
+
+}
+
+void task5() {
+    FILE *input_file = fopen("../input.txt", "r");
+    FILE *temp_file = fopen("../temp.txt", "w");
+
+    char line[MAX_SIZE];
+    char longest_word[MAX_SIZE];
+
+    while(fgets(line, sizeof(line), input_file) != NULL) {
+        get_longest_word(line, longest_word);
+        fprintf(temp_file, "%s", longest_word);
+    }
+
+
+    fclose(input_file);
+    fclose(temp_file);
+
+    remove("../input.txt");
+    rename("../temp.txt", "../input.txt");
+}
+
 void task4() {
     FILE *input_file = fopen("../input.txt", "r");
     FILE *temp_file = fopen("../temp.txt", "w");
@@ -103,7 +144,7 @@ void task1() {
 }
 
 int main() {
-    task4();
+    task5();
 
     return 0;
 }
