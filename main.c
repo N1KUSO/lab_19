@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_SIZE 100
+
+typedef struct Polynomial {
+    int power;
+    double coefficient;
+} Polynomial;
 
 int calculate(int op1, char opetator, int op2) {
     switch (opetator) {
@@ -36,7 +42,36 @@ void get_longest_word(char *line, char* longest_word) {
     }
 
     strcpy(longest_word, max_word);
+}
 
+int isRoot(Polynomial poly, float x) {
+    float result = 0;
+    float power_of_x = 1;
+    for (int i = 0; i <= poly.power; i++) {
+        result += poly.coefficient * power_of_x;
+        power_of_x *= x;
+    }
+    return result == 0;
+}
+
+void task6() {
+    FILE *input_file = fopen("../input.bin", "rb");
+    FILE *temp_file = fopen("../temp.bin", "wb");
+
+    Polynomial poly;
+    float x = 2; // input x
+
+    while (fread(&poly, sizeof(Polynomial), 1, input_file)) {
+        if (!isRoot(poly, x)) {
+            fwrite(&poly, sizeof(Polynomial), 1, temp_file);
+        }
+    }
+
+    fclose(input_file);
+    fclose(temp_file);
+
+    remove("../input.bin");
+    rename("../temp.bin", "../input.bin");
 }
 
 void task5() {
@@ -144,7 +179,7 @@ void task1() {
 }
 
 int main() {
-    task5();
+    task6();
 
     return 0;
 }
