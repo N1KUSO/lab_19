@@ -54,6 +54,32 @@ int isRoot(Polynomial poly, float x) {
     return result == 0;
 }
 
+void task7() {
+    FILE *input_file = fopen("../input.bin", "rb");
+    FILE *temp_file = fopen("../temp.bin", "wb");
+
+    int number;
+    while (fread(&number, sizeof(int), 1, input_file) != 0) {
+        if (number >= 0) {
+            fwrite(&number, sizeof(int), 1, temp_file);
+        }
+    }
+
+    rewind(input_file);
+
+    while (fread(&number, sizeof(int), 1, input_file) != 0) {
+        if (number < 0) {
+            fwrite(&number, sizeof(int), 1, temp_file);
+        }
+    }
+
+    fclose(input_file);
+    fclose(temp_file);
+
+    remove("../input.bin");
+    rename("../temp.bin", "../input.bin");
+}
+
 void task6() {
     FILE *input_file = fopen("../input.bin", "rb");
     FILE *temp_file = fopen("../temp.bin", "wb");
@@ -179,7 +205,7 @@ void task1() {
 }
 
 int main() {
-    task6();
+    task7();
 
     return 0;
 }
