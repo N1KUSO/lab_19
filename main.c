@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -43,6 +44,27 @@ void get_longest_word(char *line, char* longest_word) {
     }
 
     strcpy(longest_word, max_word);
+}
+
+bool is_symmetric(int *matrix, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (matrix[i * n + j] != matrix[j * n + i]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void transpose(int *matrix, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            int temp = matrix[i * n + j];
+            matrix[i * n + j] = matrix[j * n + i];
+            matrix[j * n + i] = temp;
+        }
+    }
 }
 
 void task5() {
@@ -201,25 +223,6 @@ void generate_input_output_task6() {
     fclose(input_file);
 }
 
-void print_polynomials(const char* filename) {
-    FILE* file = fopen(filename, "rb");
-
-    int num_terms;
-    while (fread(&num_terms, sizeof(int), 1, file) == 1) {
-        Polynomial *poly = (Polynomial*)malloc(num_terms * sizeof(Polynomial));
-        fread(poly, sizeof(Polynomial), num_terms, file);
-
-        for (int i = 0; i < num_terms; ++i) {
-            printf("%+.2fx^%d ", poly[i].coefficient, poly[i].power);
-        }
-        printf("\n");
-
-        free(poly);
-    }
-
-    fclose(file);
-}
-
 void task7() {
     FILE *input_file = fopen("../input.bin", "rb");
     FILE *output_file = fopen("../output.bin", "wb");
@@ -269,6 +272,90 @@ void generate_input_output_task7() {
     fclose(input_file);
 }
 
+void task8() {
+    FILE *input_file = fopen("../input.bin", "rb");
+    FILE *output_file = fopen("../output.bin", "wb");
+
+    int n = 3;
+
+    int *matrix = (int *)malloc(n * n * sizeof(int));
+
+    while (fread(matrix, sizeof(int), n * n, input_file) == n * n) {
+        if (!is_symmetric(matrix, n)) {
+            transpose(matrix, n);
+        }
+        fwrite(matrix, sizeof (int), n * n, output_file);
+    }
+
+    free(matrix);
+    fclose(input_file);
+    fclose(output_file);
+}
+
+void generate_input_output_task8() {
+    FILE *input_file = fopen("../input.bin", "wb");
+    FILE *excepted_file = fopen("../excepted.bin", "wb");
+
+    int n = 3;
+
+    int matrix1[3][3] = {
+            {1, 2, 3},
+            {2, 4, 5},
+            {3, 5, 6}
+    };
+
+    int matrix2[3][3] = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+    };
+
+    fwrite(matrix1, sizeof(int), n * n, input_file);
+    fwrite(matrix2, sizeof(int), n * n, input_file);
+
+    int matrix1_processed[3][3] = {
+            {1, 2, 3},
+            {2, 4, 5},
+            {3, 5, 6}
+    };
+
+    int matrix2_processed[3][3] = {
+            {1, 4, 7},
+            {2, 5, 8},
+            {3, 6, 9}
+    };
+
+    fwrite(matrix1_processed, sizeof(int), n * n, excepted_file);
+    fwrite(matrix2_processed, sizeof(int), n * n, excepted_file);
+
+    fclose(input_file);
+    fclose(excepted_file);
+}
+
+void test_task8() {
+    generate_input_output_task8();
+    task8();
+
+    FILE *output_file = fopen("../output.bin", "rb");
+    FILE *excepted_file = fopen("../excepted.bin", "rb");
+
+    int num1, num2;
+    int error = 0;
+    while (fread(&num1, sizeof(int), 1, output_file) == 1 && fread(&num2, sizeof(int), 1, excepted_file) == 1) {
+        if (num1 != num2) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 8\n");
+    }
+}
+
 void test_task7() {
     generate_input_output_task7();
     task7();
@@ -289,7 +376,7 @@ void test_task7() {
     fclose(excepted_file);
 
     if (error) {
-        printf("Test failed!\n");
+        printf("Test failed! Task 7\n");
     }
 }
 
@@ -313,13 +400,15 @@ void test_task6() {
     fclose(excepted_file);
 
     if (error) {
-        printf("Test failed!\n");
+        printf("Test failed! Task 6\n");
     }
 }
+
 
 int main() {
     test_task6();
     test_task7();
+    test_task8();
 
     return 0;
 }
