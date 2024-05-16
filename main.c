@@ -11,8 +11,13 @@ typedef struct Polynomial {
     double coefficient;
 } Polynomial;
 
-int calculate(int op1, char opetator, int op2) {
-    switch (opetator) {
+typedef struct {
+    char name[MAX_SIZE];
+    int best_result;
+} Athlete;
+
+int calculate(int op1, char operator, int op2) {
+    switch (operator) {
         case '+':
             return op1 + op2;
         case '-':
@@ -46,7 +51,7 @@ void get_longest_word(char *line, char* longest_word) {
     strcpy(longest_word, max_word);
 }
 
-bool is_symmetric(int *matrix, int n) {
+bool is_symmetric(const int *matrix, int n) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (matrix[i * n + j] != matrix[j * n + i]) {
@@ -332,6 +337,86 @@ void generate_input_output_task8() {
     fclose(excepted_file);
 }
 
+int compare_athletes(const void *a, const void *b) {
+    Athlete *athleteA = (Athlete *)a;
+    Athlete *athleteB = (Athlete *)b;
+    return athleteB->best_result - athleteA->best_result;
+}
+
+void task9() {
+    FILE *input_file = fopen("../input.bin", "rb");
+    FILE *output_file = fopen("../output.bin", "wb");
+
+    int n = 3;
+
+    fseek(input_file, 0, SEEK_END);
+    long file_size = ftell(input_file);
+    fseek(input_file, 0, SEEK_SET);
+
+    int count_athletes = file_size / sizeof(Athlete);
+    Athlete *athletes = (Athlete *) malloc(file_size);
+
+    fread(athletes, sizeof(Athlete), count_athletes, input_file);
+    qsort(athletes, count_athletes, sizeof(Athlete), compare_athletes);
+
+    fwrite(athletes, sizeof(Athlete), n < count_athletes ? n : count_athletes, output_file);
+
+    free(athletes);
+    fclose(input_file);
+    fclose(output_file);
+}
+
+
+void generate_input_output_task9() {
+    FILE *input_file = fopen("../input.bin", "wb");
+    FILE *excepted_file = fopen("../excepted.bin", "wb");
+
+    Athlete athletes[] = {
+            {"Andrey 1", 300},
+            {"Test 2", 400},
+            {"Kto-to 3", 250},
+            {"Eshe 4", 350},
+            {"Number 5", 450}
+    };
+
+    fwrite(athletes, sizeof(Athlete), sizeof(athletes) / sizeof(Athlete), input_file);
+
+    Athlete athletes_best[] = {
+            {"Number 5", 450},
+            {"Test 2", 400},
+            {"Eshe 4", 350}
+    };
+
+    fwrite(athletes_best, sizeof(Athlete), sizeof(athletes) / sizeof(Athlete), excepted_file);
+
+    fclose(input_file);
+    fclose(excepted_file);
+}
+
+void test_task9() {
+    generate_input_output_task9();
+    task9();
+
+    FILE *output_file = fopen("../output.bin", "rb");
+    FILE *excepted_file = fopen("../excepted.bin", "rb");
+
+    int num1, num2;
+    int error = 0;
+    while (fread(&num1, sizeof(int), 1, output_file) == 1 && fread(&num2, sizeof(int), 1, excepted_file) == 1) {
+        if (num1 != num2) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 9\n");
+    }
+}
+
 void test_task8() {
     generate_input_output_task8();
     task8();
@@ -409,6 +494,7 @@ int main() {
     test_task6();
     test_task7();
     test_task8();
+    test_task9();
 
     return 0;
 }
