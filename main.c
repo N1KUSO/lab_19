@@ -6,6 +6,18 @@
 
 #define MAX_SIZE 100
 
+typedef struct {
+    char name[MAX_SIZE];
+    double unit_price;
+    double total_price;
+    int quantity;
+} Product;
+
+typedef struct {
+    char name[MAX_SIZE];
+    int quantity;
+} Order;
+
 typedef struct Polynomial {
     int power;
     double coefficient;
@@ -366,7 +378,6 @@ void task9() {
     fclose(output_file);
 }
 
-
 void generate_input_output_task9() {
     FILE *input_file = fopen("../input.bin", "wb");
     FILE *excepted_file = fopen("../excepted.bin", "wb");
@@ -391,6 +402,108 @@ void generate_input_output_task9() {
 
     fclose(input_file);
     fclose(excepted_file);
+}
+
+void task10() {
+    FILE *f = fopen("../input.bin", "rb");
+    FILE *g = fopen("../input_g.bin", "rb");
+
+    fseek(g, 0, SEEK_END);
+    long g_size = ftell(g);
+    fseek(g, 0, SEEK_SET);
+    int num_orders = g_size / sizeof(Order);
+    Order *orders = (Order *)malloc(g_size);
+
+    fread(orders, sizeof(Order), num_orders, g);
+    fseek(f, 0, SEEK_END);
+
+    long f_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    int num_products = f_size / sizeof(Product);
+    Product *products = (Product *)malloc(f_size);
+
+    fread(products, sizeof(Product), num_products, f);
+
+    for (int i = 0; i < num_orders; i++) {
+        for (int j = 0; j < num_products; j++) {
+            if (strcmp(orders[i].name, products[j].name) == 0) {
+                products[j].quantity -= orders[i].quantity;
+                if (products[j].quantity < 0) {
+                    products[j].quantity = 0;
+                }
+                products[j].total_price = products[j].quantity * products[j].unit_price;
+                break;
+            }
+        }
+    }
+
+    FILE *output = fopen("../output.bin", "wb");
+
+    for (int i = 0; i < num_products; i++) {
+        if (products[i].quantity > 0) {
+            fwrite(&products[i], sizeof(Product), 1, output);
+        }
+    }
+
+    free(products);
+    free(orders);
+
+    fclose(output);
+    fclose(f);
+    fclose(g);
+}
+
+void generate_input_output_task10() {
+    FILE *input_file = fopen("../input.bin", "wb");
+    FILE *input_g_file = fopen("../input_g.bin", "wb");
+    FILE *excepted_file = fopen("../excepted.bin", "wb");
+
+    Product products[] = {
+            {"Laptop", 1000.0, 5000.0, 5},
+            {"Phone", 500.0, 2500.0, 5},
+            {"Tablet", 300.0, 900.0, 3}
+    };
+
+    Order orders[] = {
+            {"Laptop", 2},
+            {"Phone", 1},
+            {"Tablet", 4} // Обратите внимание, что заказываем больше, чем есть на складе
+    };
+
+    Product updated_products[] = {
+            {"Laptop", 1000.0, 3000.0, 3},
+            {"Phone", 500.0, 2000.0, 4}
+    };
+
+    fwrite(products, sizeof(Product), sizeof(products) / sizeof(Product), input_file);
+    fwrite(orders, sizeof(Order), sizeof(orders) / sizeof(Order), input_g_file);
+    fwrite(updated_products, sizeof(Order), sizeof(orders) / sizeof(Order), excepted_file);
+}
+
+
+void test_task10() {
+    generate_input_output_task10();
+    task10();
+
+    FILE *output_file = fopen("../output.bin", "rb");
+    FILE *excepted_file = fopen("../excepted.bin", "rb");
+
+    int num1, num2;
+    int error = 0;
+    while (fread(&num1, sizeof(int), 1, output_file) == 1 && fread(&num2, sizeof(int), 1, excepted_file) == 1) {
+        if (num1 != num2) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 10\n");
+    }
 }
 
 void test_task9() {
@@ -495,6 +608,7 @@ int main() {
     test_task7();
     test_task8();
     test_task9();
+    test_task10();
 
     return 0;
 }
