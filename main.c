@@ -108,7 +108,7 @@ void task4() {
     FILE *input_file = fopen("../input.txt", "r");
     FILE *temp_file = fopen("../temp.txt", "w");
 
-    const char *sequence = "abc";
+    const char *sequence = "test";
     char word[MAX_SIZE];
 
     while(fscanf(input_file, "%s", word) != EOF) {
@@ -602,8 +602,189 @@ void test_task6() {
     }
 }
 
+void test_task5() {
+    FILE *input_file = fopen("../input.txt", "w");
+    FILE *excepted_file = fopen("../excepted.txt", "w");
+
+    fprintf(input_file, "This is a test\nAnother test sentence\nShort\n");
+
+    fprintf(excepted_file, "test\nsentence\nShort\n");
+
+    fclose(input_file);
+    fclose(excepted_file);
+
+    task5();
+
+    FILE *output_file = fopen("../output.txt", "r");
+    excepted_file = fopen("../excepted.txt", "r");
+
+    char output_line[256];
+    char excepted_line[256];
+    int error = 0;
+
+    while (fgets(output_line, sizeof(output_line), output_file) && fgets(excepted_line, sizeof(excepted_line), excepted_file)) {
+        if (strcmp(output_line, excepted_line) != 0) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 1\n");
+    }
+}
+
+void test_task4() {
+    FILE *input_file = fopen("../input.txt", "w");
+    FILE *excepted_file = fopen("../excepted.txt", "w");
+
+    fprintf(input_file, "This is test.\nAnother test 2\n??????\nTest 23781\n");
+
+    fprintf(excepted_file, "test.\ntest\n");
+
+    fclose(input_file);
+    fclose(excepted_file);
+
+    task4();
+
+    FILE *output_file = fopen("../output.txt", "r");
+    excepted_file = fopen("../excepted.txt", "r");
+
+    char output_line[256];
+    char excepted_line[256];
+    int error = 0;
+
+    while (fgets(output_line, sizeof(output_line), output_file) && fgets(excepted_line, sizeof(excepted_line), excepted_file)) {
+        if (strcmp(output_line, excepted_line) != 0) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 1\n");
+    }
+}
+
+void test_task3() {
+    FILE *input_file = fopen("../input.txt", "w");
+    FILE *excepted_file = fopen("../excepted.txt", "w");
+
+    fprintf(input_file, "3 + 5 * 2\n");
+
+    fprintf(excepted_file, "3 + 5 * 2 = 13");
+
+    fclose(input_file);
+    fclose(excepted_file);
+
+    task3();
+
+    FILE *output_file = fopen("../output.txt", "r");
+    excepted_file = fopen("../excepted.txt", "r");
+
+    char output_line[256];
+    char excepted_line[256];
+    int error = 0;
+
+    while (fgets(output_line, sizeof(output_line), output_file) && fgets(excepted_line, sizeof(excepted_line), excepted_file)) {
+        if (strcmp(output_line, excepted_line) != 0) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 1\n");
+    }
+}
+
+void test_task2() {
+    FILE *input_file = fopen("../input.txt", "w");
+    FILE *excepted_file = fopen("../excepted.txt", "w");
+
+    fprintf(input_file, "123.456\n78.90\n0.1234\n45.6\n");
+    fprintf(excepted_file, "123.46\n78.90\n0.12\n45.60\n");
+
+    fclose(input_file);
+    fclose(excepted_file);
+
+    task2();
+
+    FILE *output_file = fopen("../output.txt", "r");
+    excepted_file = fopen("../excepted.txt", "r");
+
+    char output_line[256];
+    char excepted_line[256];
+    int error = 0;
+
+    while (fgets(output_line, sizeof(output_line), output_file) && fgets(excepted_line, sizeof(excepted_line), excepted_file)) {
+        if (strcmp(output_line, excepted_line) != 0) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 2\n");
+    }
+}
+
+void test_task1() {
+    FILE *input_file = fopen("../input.txt", "w");
+    FILE *excepted_file = fopen("../excepted.txt", "w");
+
+    fprintf(input_file, "3\n1 2 3\n4 5 6\n7 8 9\n");
+    fprintf(input_file, "2\n10 11\n12 13\n");
+
+    fprintf(excepted_file, "3\n1 4 7\n2 5 8\n3 6 9\n");
+    fprintf(excepted_file, "2\n10 12\n11 13\n");
+
+    fclose(input_file);
+    fclose(excepted_file);
+
+    task1();
+
+    FILE *output_file = fopen("../output.txt", "r");
+    excepted_file = fopen("../excepted.txt", "r");
+
+    char output_line[256];
+    char excepted_line[256];
+    int error = 0;
+
+    while (fgets(output_line, sizeof(output_line), output_file) && fgets(excepted_line, sizeof(excepted_line), excepted_file)) {
+        if (strcmp(output_line, excepted_line) != 0) {
+            error = 1;
+            break;
+        }
+    }
+
+    fclose(output_file);
+    fclose(excepted_file);
+
+    if (error) {
+        printf("Test failed! Task 1\n");
+    }
+}
+
 
 int main() {
+    test_task1();
+    test_task2();
+    test_task3();
+    test_task4();
+    test_task5();
     test_task6();
     test_task7();
     test_task8();
